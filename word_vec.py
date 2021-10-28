@@ -23,11 +23,11 @@ def visual_pca(model, words=None, sample=0):
         else:
             words = [word for word in model.vocab]
     word_vecs = np.array([model[w] for w in words])
-    two_dim = PCA().fit_transform(word_vecs)[:,:2]
-    plt.figure(figsize=(6,6))
-    plt.scatter(two_dim[:,0], two_dim[:,1], edgecolors='k', c='r')
-    for word, (x,y) in zip(words,two_dim):
-        plt.text(x+0.05, y+0.05, word)
+    two_dim = PCA().fit_transform(word_vecs)[:, :2]
+    plt.figure(figsize=(6, 6))
+    plt.scatter(two_dim[:, 0], two_dim[:, 1], edgecolors='k', c='r')
+    for word, (x, y) in zip(words, two_dim):
+        plt.text(x + 0.05, y + 0.05, word)
     plt.show()
 
 
