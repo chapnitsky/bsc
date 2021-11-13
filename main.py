@@ -12,6 +12,7 @@ import wikipedia as w
 from wikipedia.exceptions import WikipediaException
 from articles import arr
 import csv
+import re
 
 
 def get_wiki_content(index) -> list:
@@ -76,15 +77,23 @@ if __name__ == "__main__":
     visual_pca(model, words=['sex', 'wife', 'wine', 'brandy', 'spaghetti', 'hamburger', 'pizza', 'frog',
                              'ape', 'germany', 'france', 'israel', 'italy', 'school', 'homework', 'college'], sample=50)
     cleaned = []
+    MIN = 60
     for i in range(atricles_num):
         art = get_wiki_content(i).lower().strip()
-        for line in art.split('\n'):
+        for j, line in enumerate(art.split('\n')):
             if line == "== references ==":
                 break
 
-            if line and not "==" in line:
-                cleaned.append(line)
-                print(line)
+            sizer = len(line)
+            if line and not "==" in line and sizer > MIN:
+                sentences = re.split(r'[.?!]\s* ', line)
+                if sentences[-1]:
+                    cleaned.append(sentences)
+                else:
+                    cleaned.append(sentences[:-1])
+
+                # cleaned.extend([sentence for sentence in line.split(])
+                print(f'iteration {j} (size = {sizer}): {line}\n')
 
 
     with open('model.pkl', 'wb') as f:
