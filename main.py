@@ -1,6 +1,6 @@
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
-import torch
+# import torch
 import pickle as pkl
 import os
 import numpy as np
