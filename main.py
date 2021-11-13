@@ -14,20 +14,20 @@ from articles import arr
 import csv
 
 
-def get_wiki_content() -> list:
-    conts = []
-    for art in arr:
-        try:
-            cont = w.page(str(art)).content
-            print(cont)
-            conts.append(cont)
-        except WikipediaException:
-            continue
-    return conts
+def get_wiki_content(index) -> list:
+    # conts = []
+    a = False
+    try:
+        cont = w.page(str(arr[index])).content
+        return cont
+        # print(cont)
+        # conts.append(cont)
+    except WikipediaException:
+        a = True
 
 
 def analogy(x1, x2, y1):
-    res = model.most_similar(positive=[y1, x2], negative=[x1])
+    res = model.most_similar(positive=[y1.lower(), x2.lower()], negative=[x1.lower()])
     return res[0][0]
 
 
@@ -47,6 +47,7 @@ def visual_pca(model, words=None, sample=0):
 
 
 if __name__ == "__main__":
+    atricles_num = len(arr)
     data = open('data.csv', 'a', newline='')
     writer = csv.writer(data)
     writer.writerow(('sentence', 'isdefault'))
@@ -70,10 +71,21 @@ if __name__ == "__main__":
         print(str(s))
     result = model.most_similar(positive=['woman', 'king'], negative=['man'])
     print("{}: {:.4f}".format(*result[0]))
-    print(analogy('japan', 'japanese', 'peru'))
+    print(analogy('japan', 'japanese', 'russia'))
 
     visual_pca(model, words=['sex', 'wife', 'wine', 'brandy', 'spaghetti', 'hamburger', 'pizza', 'frog',
                              'ape', 'germany', 'france', 'israel', 'italy', 'school', 'homework', 'college'], sample=50)
+    cleaned = []
+    for i in range(atricles_num):
+        art = get_wiki_content(i).lower().strip()
+        for line in art.split('\n'):
+            if line == "== references ==":
+                break
+
+            if line and not "==" in line:
+                cleaned.append(line)
+                print(line)
+
 
     with open('model.pkl', 'wb') as f:
         pkl.dump(model, f, protocol=pkl.HIGHEST_PROTOCOL)
