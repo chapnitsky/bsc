@@ -47,6 +47,10 @@ def visual_pca(model, words=None, sample=0):
 
 
 if __name__ == "__main__":
+    data = open('data.csv', 'a', newline='')
+    writer = csv.writer(data)
+    writer.writerow(('sentence', 'isdefault'))
+    data.close()
     model = ''
     if not os.path.isfile('model.pkl'):
         glove_file = datapath(f'{os.getcwd()}/glove.6B.100d.txt')
