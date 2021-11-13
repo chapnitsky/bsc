@@ -10,7 +10,7 @@ with open('sarcasm1.json', 'r') as f:
     data = [json.loads(line) for line in f]
 TRAIN_SIZE = 20000
 VOCAB_SIZE = 30000
-EPOCHS = 30
+EPOCHS = 20
 
 sentences = []
 labels = []
@@ -54,7 +54,7 @@ model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy']
 history = model.fit(train_mat, training_lab, epochs=EPOCHS, validation_data=(test_mat, testing_lab),
                     verbose=2)
 
-sen = ['granny starting to fear spiders in the garden might be real',
+sen = ['granny is the most bird in the wild',
        'the weather is bright and sunny']
 seq = tokenizer.texts_to_sequences(sen)
 check_mat = pad_sequences(seq, padding='post')
