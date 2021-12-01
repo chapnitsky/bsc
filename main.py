@@ -1,9 +1,6 @@
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
-# import torch
 import wikipedia as w
-# import wikipedia
-# import wikipediaapi as w
 import pickle as pkl
 import os
 import numpy as np
@@ -64,10 +61,6 @@ if __name__ == "__main__":
     else:
         with open('model.pkl', 'rb') as f:
             model = pkl.load(f)
-    # gen_model = Word2Vec(sentences=common_texts, vector_size=100, window=3, min_count=1, workers=4)
-    # gen_model = Word2Vec.load('gen_model.txt')
-    # gen_model.train([['known', 'well']], total_examples=1, epochs=1)
-    # gen_model.save('gen_model.model')
 
     sim = model.most_similar('axiom')
     for s in sim:
