@@ -1,6 +1,9 @@
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
 # import torch
+import wikipedia as w
+# import wikipedia
+# import wikipediaapi as w
 import pickle as pkl
 import os
 import numpy as np
@@ -8,9 +11,8 @@ import matplotlib.pyplot as plt
 from gensim.test.utils import datapath, get_tmpfile, common_texts
 from gensim.models import KeyedVectors, Word2Vec
 from gensim.scripts.glove2word2vec import glove2word2vec
-import wikipedia as w
 from wikipedia.exceptions import WikipediaException
-from articles import arr
+from articles import arr, resoning_words
 import csv
 import re
 
@@ -48,7 +50,7 @@ def visual_pca(model, words=None, sample=0):
 
 
 if __name__ == "__main__":
-    atricles_num = len(arr)
+    atricles_num = 2
     data = open('data.csv', 'a', newline='')
     writer = csv.writer(data)
     writer.writerow(('sentence', 'isdefault'))
@@ -76,10 +78,11 @@ if __name__ == "__main__":
 
     visual_pca(model, words=['sex', 'wife', 'wine', 'brandy', 'spaghetti', 'hamburger', 'pizza', 'frog',
                              'ape', 'germany', 'france', 'israel', 'italy', 'school', 'homework', 'college'], sample=50)
-    cleaned = []
+    cleaned = {}
     MIN = 60
     for i in range(atricles_num):
         art = get_wiki_content(i).lower().strip()
+        cleaned[i] = []
         for j, line in enumerate(art.split('\n')):
             if line == "== references ==":
                 break
@@ -88,13 +91,27 @@ if __name__ == "__main__":
             if line and not "==" in line and sizer > MIN:
                 sentences = re.split(r'[.?!]\s* ', line)
                 if sentences[-1]:
-                    cleaned.append(sentences)
+                    cleaned[i].append(sentences)
                 else:
-                    cleaned.append(sentences[:-1])
+                    cleaned[i].append(sentences[:-1])
 
                 # cleaned.extend([sentence for sentence in line.split(])
                 print(f'iteration {j} (size = {sizer}): {line}\n')
 
+    cleaned_sorted = {}
+    preds = []
+    for key in list(cleaned.keys()):
+        parags = cleaned[key]
+        cleaned_sorted[key] = []
+        for j in range(len(parags)):
+            cleaned_sorted[key].append([])
+            parag = parags[j]
+            for z in range(len(parag)):
+                cleaned_sorted[key][j].append((parag[z], (int(key), int(j), int(z))))
+                if [x for x in resoning_words if x in parag[z]]:
+                    preds.append((parag[z], (int(key), int(j), int(z))))
 
+    for pred in preds:
+        print(pred)
     with open('model.pkl', 'wb') as f:
         pkl.dump(model, f, protocol=pkl.HIGHEST_PROTOCOL)
