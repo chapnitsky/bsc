@@ -64,6 +64,8 @@ arr = ["United States",
 
 resoning_words = [
        'in recent years',
+       'trend',
+       'tend',
        'reported',
        'is famous for',
        'is known for',

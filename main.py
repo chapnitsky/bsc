@@ -50,7 +50,7 @@ def visual_pca(model, words=None, sample=0):
 
 
 if __name__ == "__main__":
-    articles_num = 2
+    articles_num = 4
     data = open('data.csv', 'a', newline='')
     writer = csv.writer(data)
     writer.writerow(('sentence', 'isdefault'))
