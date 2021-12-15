@@ -50,7 +50,7 @@ if __name__ == "__main__":
     articles_num = 4
     data = open('data.csv', 'a', newline='')
     writer = csv.writer(data)
-    writer.writerow(('sentence', 'isdefault'))
+    # writer.writerow(('sentence', 'isdefault'))
     data.close()
     model = ''
     if not os.path.isfile('model.pkl'):
@@ -108,7 +108,7 @@ if __name__ == "__main__":
         inds = pred[-1]
         par_len = len(cleaned_sorted[inds[0]])
         sent_len = len(cleaned_sorted[inds[0]][inds[1]])
-        print(f'Article: {inds[0]}/{articles_num}, Paragraph: {inds[1]}/{par_len}, Sentence: {inds[2]}/{sent_len}\n{pred[0]}\n')
+        print(f'Article: {inds[0]}/{articles_num}, Paragraph: {inds[1]}/{par_len}, Sentence: {inds[2]}/{sent_len}:\n{pred[0]}\n')
 
     with open('model.pkl', 'wb') as f:
         pkl.dump(model, f, protocol=pkl.HIGHEST_PROTOCOL)
