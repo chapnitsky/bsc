@@ -1,4 +1,4 @@
-# bsc
+# Default Resoning in text corpus
 B.sc Project
 
-Added spliting sentences. now indexing
+Creating guesses -> Showing results in a website -> Ask the user for correction -> Gather data -> train & test
