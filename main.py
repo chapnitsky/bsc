@@ -62,7 +62,7 @@ if __name__ == "__main__":
         with open('model.pkl', 'rb') as f:
             model = pkl.load(f)
 
-    sim = model.most_similar('axiom')
+    sim = model.most_similar('always')
     for s in sim:
         print(str(s))
     result = model.most_similar(positive=['woman', 'king'], negative=['man'])
