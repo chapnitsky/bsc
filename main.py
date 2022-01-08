@@ -48,10 +48,10 @@ def visual_pca(model, words=None, sample=0):
 
 if __name__ == "__main__":
     articles_num = 4
-    data = open('data.csv', 'a', newline='')
-    writer = csv.writer(data)
-    # writer.writerow(('sentence', 'isdefault'))
-    data.close()
+    # data = open('data.csv', 'a', newline='')
+    # writer = csv.writer(data)
+    # # writer.writerow(('sentence', 'isdefault'))
+    # data.close()
     model = ''
     if not os.path.isfile('model.pkl'):
         glove_file = datapath(f'{os.getcwd()}/glove.6B.100d.txt')
@@ -62,15 +62,15 @@ if __name__ == "__main__":
         with open('model.pkl', 'rb') as f:
             model = pkl.load(f)
 
-    sim = model.most_similar('always')
-    for s in sim:
-        print(str(s))
-    result = model.most_similar(positive=['woman', 'king'], negative=['man'])
-    print("{}: {:.4f}".format(*result[0]))
-    print(analogy('japan', 'japanese', 'russia'))
-
-    visual_pca(model, words=['sex', 'wife', 'wine', 'brandy', 'spaghetti', 'hamburger', 'pizza', 'frog',
-                             'ape', 'germany', 'france', 'israel', 'italy', 'school', 'homework', 'college'], sample=50)
+    # sim = model.most_similar('always')
+    # for s in sim:
+    #     print(str(s))
+    # result = model.most_similar(positive=['woman', 'king'], negative=['man'])
+    # print("{}: {:.4f}".format(*result[0]))
+    # print(analogy('japan', 'japanese', 'russia'))
+    #
+    # visual_pca(model, words=['sex', 'wife', 'wine', 'brandy', 'spaghetti', 'hamburger', 'pizza', 'frog',
+    #                          'ape', 'germany', 'france', 'israel', 'italy', 'school', 'homework', 'college'], sample=50)
     cleaned = {}
     MIN = 60
     for i in range(articles_num):

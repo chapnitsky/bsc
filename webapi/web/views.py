@@ -11,10 +11,9 @@ coll = db.data
 
 
 def home(request):
-    # coll.insert_one({"_id": 0, "name": "fuck"})
+    # coll.insert_one({"_id": 0, "name": "fss"})
     # print(f'{os.getcwd()}\web\htmls\homelogin.html\n')
     return render(request, f'{os.getcwd()}\web\htmls\homelogin.html')
-    # return HttpResponse('<h1>FUCK YOU</h1>')
 
 
 def checker(request):
