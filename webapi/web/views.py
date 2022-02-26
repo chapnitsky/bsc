@@ -3,7 +3,6 @@ from django.http import HttpResponse
 import os
 import pymongo as mongo
 
-# Create your views here.
 
 cli = mongo.MongoClient("mongodb://localhost:27017/")
 db = cli.database
@@ -19,7 +18,6 @@ def home(request):
 
 
 def checker(request):
-    print("worked\n")
     res = coll.find({})
     for x in res:
         print(f'document: {x}\n')
@@ -30,6 +28,5 @@ def checker(request):
 def sub(request):
     res = coll.count_documents({})
     print(f'counted: {res}')
-    print(f'coll: {coll}\n')
 
     return render(request, f'{os.getcwd()}\web\htmls\home.html')
