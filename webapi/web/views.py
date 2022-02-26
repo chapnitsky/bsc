@@ -23,10 +23,11 @@ def checker(request):
     for x in res:
         y = x
         y['id'] = y.pop('_id')
+        # coll.update_one({"_id": y['id']}, {"$set": {"checked": True}})  # works
         if y['checked']:
             continue
         # y.pop('_id', None)  # For mongo o
-        object_name = namedtuple("aaa", y.keys())(*y.values())
+        object_name = namedtuple("sentence_object", y.keys())(*y.values())
 
         print(type(object_name))
         print(f'document: {object_name}\n')
