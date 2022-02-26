@@ -55,7 +55,7 @@ ROOT_URLCONF = 'webapi.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['htmls', 'web'],
+        'DIRS': ['web/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
