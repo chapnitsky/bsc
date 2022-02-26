@@ -1,0 +1,18 @@
+{% extends 'web/base.html' %}
+
+{% block content %}
+    <div class="formcontainer">
+        <a href="checker" class='btn btn-lg'>Generate Prediction</a>
+    </div>
+    <div id="inject">
+        <ul>
+            {% for item in sentences %}
+                {% if item.ans == 1 %}
+                    <li>{{item.sentence}} : Axiom</li>
+                {% else %}
+                    <li>{{item.sentence}} : Not Axiom</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
