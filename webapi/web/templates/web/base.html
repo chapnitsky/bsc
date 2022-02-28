@@ -5,6 +5,9 @@
     <title>{{Title}}</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
     <style>
+      .but {
+        display: inline;
+      }
       html, body {
       display: flex;
       justify-content: center;
@@ -74,10 +77,15 @@
     </style>
 </head>
 <body>
+    <div>
     <form action={{act}}>
       <h1>{{h1_base}}</h1>
       {% block content %}
         {% endblock %}
     </form>
+    </div>
+
+    {% block button %}
+    {% endblock %}
 </body>
 </html>

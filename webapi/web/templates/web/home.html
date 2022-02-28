@@ -4,15 +4,29 @@
     <div class="formcontainer">
         <a href="checker" class='btn btn-lg'>Generate Prediction</a>
     </div>
+    {% if sentences %}
     <div id="inject">
         <ul>
-            {% for item in sentences %}
-                {% if item.ans == 1 %}
-                    <li>{{item.sentence}} : Axiom</li>
+                {% if sentences.ans == 1 %}
+                    <li>{{sentences.sentence}} : Axiom</li>
                 {% else %}
-                    <li>{{item.sentence}} : Not Axiom</li>
+                    <li>{{sentences.sentence}} : Not Axiom</li>
                 {% endif %}
-            {% endfor %}
         </ul>
     </div>
+    <div class="but">
+
+        </form>
+    <form action="checker/{{sentences.id}}+">
+        <button class="btn">Correct</button>
+    </form>
+    </div>
+
+    <div class="but">
+    <form action="checker/{{sentences.id}}-">
+        <button class="btn">Wrong</button>
+    </form>
+    </div>
+    {% endif %}
+
 {% endblock %}
