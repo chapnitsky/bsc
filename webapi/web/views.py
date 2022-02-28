@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import os
 import pymongo as mongo
+from bson.objectid import ObjectId
 from collections import namedtuple
 
 cli = mongo.MongoClient("mongodb://localhost:27017/")
@@ -14,12 +15,19 @@ def login(request):
 
 
 def checked(request, string):
-    print(f'string: {string}')
+    decision = string[-1]
+    print(f'string: {string[:-1]}')
+
+    filt = {"_id": ObjectId(string[:-1])}
+    new_val = {"$set": {"ans": 1 if decision == '+' else -1, "checked": True}}
+    coll.update_one(filt, new_val)
     return redirect('/sub')
 
 
 def checker(request):
     res = coll.find_one({"checked": False})
+    if not res:
+        return redirect('/sub')
     y = res
     y['id'] = str(y.pop('_id'))
     object_name = namedtuple("Sentence", y.keys())(*y.values())
