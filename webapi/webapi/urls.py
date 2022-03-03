@@ -15,16 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from web.views import home, login, checker, checked, tester
+from web.views import home, login, checker, checked
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', login, name='homelogin'),
     path('sub/', home, name='home'),
     path('sub/checker', checker, name='check'),
-    path('sub/checker/<int:number>', tester, name='test'),
-    path('sub/checker/<str:string>', checked, name='checked'),
+    path('sub/checker/<str:string>', checked, name='checked')
 ]
-urlpatterns += staticfiles_urlpatterns()
-

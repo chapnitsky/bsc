@@ -16,8 +16,6 @@ def login(request):
 
 def checked(request, string):
     decision = string[-1]
-    if decision != '+' or decision != '-':
-        return redirect('/sub')
     print(f'string: {string[:-1]}')
 
     filt = {"_id": ObjectId(string[:-1])}
@@ -36,11 +34,6 @@ def checker(request):
     print(f'document: {object_name}\n')
 
     return render(request, 'web/home.html', {"Title": "Home", "act": "", "h1_base": "Home", "sentences": object_name})
-
-
-def tester(request, number):
-    print(f'test work, got {number}')
-    return HttpResponse("""<html><script>window.location.replace('/sub');</script></html>""")
 
 
 def home(request):
