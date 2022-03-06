@@ -1,10 +1,13 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from mongo import coll
 from bson.objectid import ObjectId
 from collections import namedtuple
+import pymongo
 
-
+client = pymongo.MongoClient(
+    f'mongodb+srv://satlagamer:Swuiti25!!@website.7lapl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
+db = client.database
+coll = db.data
 def login(request):
     return render(request, 'web/login.html', {"Title": "Login", "act": "/sub", "h1_base": "Login"})
 

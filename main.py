@@ -9,10 +9,10 @@ from gensim.models import KeyedVectors
 from gensim.scripts.glove2word2vec import glove2word2vec
 from wikipedia.exceptions import WikipediaException
 from articles import arr, resoning_words
-from database.mongo import coll
 from nltk.tokenize import sent_tokenize
-
+from mongo import coll
 # nltk.download('punkt')
+
 
 def get_wiki_content(index) -> list:
     # conts = []
