@@ -1,22 +1,18 @@
-from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
 import wikipedia as w
 import pickle as pkl
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from gensim.test.utils import datapath, get_tmpfile, common_texts
-from gensim.models import KeyedVectors, Word2Vec
+from gensim.test.utils import datapath, get_tmpfile
+from gensim.models import KeyedVectors
 from gensim.scripts.glove2word2vec import glove2word2vec
 from wikipedia.exceptions import WikipediaException
 from articles import arr, resoning_words
-from mongo import coll
-import re
+from database.mongo import coll
+from nltk.tokenize import sent_tokenize
 
-a = coll.find({})
-for x in a:
-    print(x)
-
+# nltk.download('punkt')
 
 def get_wiki_content(index) -> list:
     # conts = []
@@ -74,7 +70,7 @@ if __name__ == "__main__":
     cleaned = {}
     MIN = 60
     for i in range(articles_num):
-        art = get_wiki_content(i).lower().strip()
+        art = str(get_wiki_content(i)).lower().strip()
         cleaned[i] = []
         for j, line in enumerate(art.split('\n')):
             if line == "== references ==":
@@ -82,7 +78,8 @@ if __name__ == "__main__":
 
             sizer = len(line)
             if line and not "==" in line and sizer > MIN:
-                sentences = re.split(r'[.?!]\s* ', line)
+                # sentences = re.split(r'[.?!]\s* ', line)
+                sentences = sent_tokenize(line)
                 if sentences[-1]:
                     cleaned[i].append(sentences)
                 else:
@@ -105,6 +102,7 @@ if __name__ == "__main__":
                     preds.append((parag[z], (int(key), int(j), int(z))))
 
     for pred in preds:
+        coll.insert_one({"sentence": str(pred[0]), "ans": 1, "checked": False})
         inds = pred[-1]
         par_len = len(cleaned_sorted[inds[0]])
         sent_len = len(cleaned_sorted[inds[0]][inds[1]])
