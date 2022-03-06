@@ -8,9 +8,12 @@
     <div id="inject">
         <ul>
                 {% if sentences.ans == 1 %}
-                    <li>{{sentences.sentence}} : Axiom</li>
+                    <li>{{sentences.sentence}}</li>
+                    <div class="axiom">Axiom</div>
                 {% else %}
-                    <li>{{sentences.sentence}} : Not Axiom</li>
+                    <li>{{sentences.sentence}}</li>
+                    <div class="notaxiom">Not Axiom</div>
+
                 {% endif %}
         </ul>
     </div>
