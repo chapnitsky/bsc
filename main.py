@@ -4,7 +4,6 @@ import wikipedia as w
 import pickle as pkl
 import os
 import numpy as np
-import pymongo
 import matplotlib.pyplot as plt
 from gensim.test.utils import datapath, get_tmpfile, common_texts
 from gensim.models import KeyedVectors, Word2Vec
