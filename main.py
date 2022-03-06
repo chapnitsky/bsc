@@ -4,14 +4,21 @@ import wikipedia as w
 import pickle as pkl
 import os
 import numpy as np
+import pymongo
 import matplotlib.pyplot as plt
 from gensim.test.utils import datapath, get_tmpfile, common_texts
 from gensim.models import KeyedVectors, Word2Vec
 from gensim.scripts.glove2word2vec import glove2word2vec
 from wikipedia.exceptions import WikipediaException
 from articles import arr, resoning_words
-import csv
+from mongo import coll
 import re
+
+
+coll.insert_one({"sentence": "hi"})
+a = coll.find({})
+for x in a:
+    print(x)
 
 
 def get_wiki_content(index) -> list:
@@ -108,7 +115,8 @@ if __name__ == "__main__":
         inds = pred[-1]
         par_len = len(cleaned_sorted[inds[0]])
         sent_len = len(cleaned_sorted[inds[0]][inds[1]])
-        print(f'Article: {inds[0]}/{articles_num}, Paragraph: {inds[1]}/{par_len}, Sentence: {inds[2]}/{sent_len}:\n{pred[0]}\n')
+        print(
+            f'Article: {inds[0]}/{articles_num}, Paragraph: {inds[1]}/{par_len}, Sentence: {inds[2]}/{sent_len}:\n{pred[0]}\n')
 
     with open('model.pkl', 'wb') as f:
         pkl.dump(model, f, protocol=pkl.HIGHEST_PROTOCOL)

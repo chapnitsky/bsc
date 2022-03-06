@@ -1,13 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-import os
-import pymongo as mongo
+from mongo import coll
 from bson.objectid import ObjectId
 from collections import namedtuple
-
-cli = mongo.MongoClient("mongodb://localhost:27017/")
-db = cli.database
-coll = db.data
 
 
 def login(request):
