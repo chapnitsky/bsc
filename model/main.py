@@ -108,6 +108,6 @@ if __name__ == "__main__":
         sent_len = len(cleaned_sorted[inds[0]][inds[1]])
         print(
             f'Article: {inds[0]}/{articles_num}, Paragraph: {inds[1]}/{par_len}, Sentence: {inds[2]}/{sent_len}:\n{pred[0]}\n')
-
-    with open('model.pkl', 'wb') as f:
-        pkl.dump(model, f, protocol=pkl.HIGHEST_PROTOCOL)
+    #
+    # with open('model.pkl', 'wb') as f:
+    #     pkl.dump(model, f, protocol=pkl.HIGHEST_PROTOCOL)
