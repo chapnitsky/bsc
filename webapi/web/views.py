@@ -53,4 +53,8 @@ def checker(request):
 
 
 def home(request):
+    usrname = request.GET.get('uname')
+    password = request.GET.get('psw')
+
+    # print(f'usr: {usrname}\npsw: {password}')
     return render(request, 'web/home.html', {"Title": "Home", "act": "/checker", "h1_base": "Home"})
