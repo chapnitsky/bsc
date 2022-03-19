@@ -15,12 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from web.views import home, login, checker, checked
+from web.views import home, login, checker, decide_action
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', login, name='homelogin'),
+    path('', login, name='login'),
     path('sub/', home, name='home'),
-    path('sub/checker', checker, name='check'),
-    path('sub/checker/<str:string>', checked, name='checked')
+    path('sub/checker', checker, name='checker'),
+    path('sub/checker/<str:string>', decide_action, name='decide_action')
 ]

@@ -14,9 +14,9 @@ def login(request):
     return render(request, 'web/login.html', {"Title": "Login", "act": "/sub", "h1_base": "Login"})
 
 
-def checked(request, string):
+def decide_action(request, string):
     decision = string[-1]
-    print(f'string: {string[:-1]}')
+    # print(f'string: {string[:-1]}')
     filt = {"_id": ObjectId(string[:-1])}
     new_val = None
     if decision == '!':
