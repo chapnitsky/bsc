@@ -49,14 +49,14 @@ def visual_pca(model, words=None, sample=0):
 if __name__ == "__main__":
     articles_num = 4
     model = ''
-    if not os.path.isfile('model.pkl'):
-        glove_file = datapath(f'{os.getcwd()}/glove.6B.100d.txt')
-        word2vec_glove_file = get_tmpfile('glove.6B.100d.word2vec.txt')
-        glove2word2vec(glove_file, word2vec_glove_file)
-        model = KeyedVectors.load_word2vec_format(word2vec_glove_file)
-    else:
-        with open('model.pkl', 'rb') as f:
-            model = pkl.load(f)
+    # if not os.path.isfile('model.pkl'):
+    #     glove_file = datapath(f'{os.getcwd()}/glove.6B.100d.txt')
+    #     word2vec_glove_file = get_tmpfile('glove.6B.100d.word2vec.txt')
+    #     glove2word2vec(glove_file, word2vec_glove_file)
+    #     model = KeyedVectors.load_word2vec_format(word2vec_glove_file)
+    # else:
+    #     with open('model.pkl', 'rb') as f:
+    #         model = pkl.load(f)
 
     # sim = model.most_similar('always')
     # for s in sim:

@@ -1,9 +1,13 @@
 {% extends 'web/base.html' %}
 
 {% block content %}
-    <div class="formcontainer">
-        <a href="checker" class='btn btn-lg'>Generate Prediction</a>
-    </div>
+    {% if correct %}
+    {% else %}
+        <div class="formcontainer">
+            <a href="checker" class='btn btn-lg'>Generate Prediction</a>
+        </div>
+    {% endif %}
+
     {% if sentences %}
     <div id="inject">
         <ul>
@@ -17,19 +21,28 @@
                 {% endif %}
         </ul>
     </div>
-    <div class="but">
-
-        </form>
-    <form action="checker/{{sentences.id}}+">
-        <button class="btn">Correct</button>
     </form>
-    </div>
 
-    <div class="but">
-    <form action="checker/{{sentences.id}}-">
-        <button class="btn">Wrong</button>
-    </form>
-    </div>
+        {% if correct %}
+            <div class="but">
+                <form action="{{sentences.id}}!">
+                    <input type="text" id="fix_correct" name="fix_correct">
+                    <button class="btn">Correct</button>
+                </form>
+            </div>
+        {% else %}
+            <div class="but">
+                <form action="checker/{{sentences.id}}+">
+                    <button class="btn">Correct</button>
+                </form>
+            </div>
+
+            <div class="but">
+                <form action="checker/{{sentences.id}}-">
+                    <button class="btn">Wrong</button>
+                </form>
+            </div>
+        {% endif %}
     {% endif %}
 
 {% endblock %}
