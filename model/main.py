@@ -11,6 +11,7 @@ from wikipedia.exceptions import WikipediaException
 from articles import arr, resoning_words
 from nltk.tokenize import sent_tokenize
 from mongo import coll
+import csv
 # nltk.download('punkt')
 
 
@@ -49,6 +50,8 @@ def visual_pca(model, words=None, sample=0):
 if __name__ == "__main__":
     articles_num = 4
     model = ''
+    csv_file = open('data.csv', 'w', encoding='UTF8')
+    csv_writer = csv.writer(csv_file)
     # if not os.path.isfile('model.pkl'):
     #     glove_file = datapath(f'{os.getcwd()}/glove.6B.100d.txt')
     #     word2vec_glove_file = get_tmpfile('glove.6B.100d.word2vec.txt')
@@ -103,6 +106,7 @@ if __name__ == "__main__":
 
     for pred in preds:
         coll.insert_one({"sentence": str(pred[0]), "ans": 1, "checked": False})
+        csv_writer.writerow([pred[0]])  # For AWS MTurk
         inds = pred[-1]
         par_len = len(cleaned_sorted[inds[0]])
         sent_len = len(cleaned_sorted[inds[0]][inds[1]])
