@@ -3,6 +3,7 @@ import wikipedia as w
 import pickle as pkl
 import os
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from gensim.test.utils import datapath, get_tmpfile
 from gensim.models import KeyedVectors
@@ -12,6 +13,8 @@ from articles import arr, resoning_words
 from nltk.tokenize import sent_tokenize
 from mongo import coll
 import csv
+
+
 # nltk.download('punkt')
 
 
@@ -50,8 +53,8 @@ def visual_pca(model, words=None, sample=0):
 if __name__ == "__main__":
     articles_num = 4
     model = ''
-    csv_file = open('data.csv', 'w', encoding='UTF8')
-    csv_writer = csv.writer(csv_file)
+    col_name = 'text'
+    df = pd.DataFrame(columns=[col_name])
     # if not os.path.isfile('model.pkl'):
     #     glove_file = datapath(f'{os.getcwd()}/glove.6B.100d.txt')
     #     word2vec_glove_file = get_tmpfile('glove.6B.100d.word2vec.txt')
@@ -104,14 +107,18 @@ if __name__ == "__main__":
                 if [x for x in resoning_words if x in parag[z]]:
                     preds.append((parag[z], (int(key), int(j), int(z))))
 
-    for pred in preds:
+    for ind, pred in enumerate(preds):
         coll.insert_one({"sentence": str(pred[0]), "ans": 1, "checked": False})
-        csv_writer.writerow([pred[0]])  # For AWS MTurk
+        df.loc[ind] = [pred[0]]  # For AWS MTurk
+        # print(df)
         inds = pred[-1]
         par_len = len(cleaned_sorted[inds[0]])
         sent_len = len(cleaned_sorted[inds[0]][inds[1]])
         print(
             f'Article: {inds[0]}/{articles_num}, Paragraph: {inds[1]}/{par_len}, Sentence: {inds[2]}/{sent_len}:\n{pred[0]}\n')
+
+    df.to_csv('data.csv', index=False)
+
     #
     # with open('model.pkl', 'wb') as f:
     #     pkl.dump(model, f, protocol=pkl.HIGHEST_PROTOCOL)
