@@ -117,7 +117,7 @@ if __name__ == "__main__":
         print(
             f'Article: {inds[0]}/{articles_num}, Paragraph: {inds[1]}/{par_len}, Sentence: {inds[2]}/{sent_len}:\n{pred[0]}\n')
 
-    df.to_csv('data.csv', index=False)
+    df.to_csv(f'{os.getcwd()}/data.csv', index=False)
 
     #
     # with open('model.pkl', 'wb') as f:
