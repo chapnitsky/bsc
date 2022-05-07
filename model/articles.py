@@ -89,8 +89,6 @@ resoning_words = [
        'surely',
        'hardly',
        'nothing',
-       'axiomatic',
-       'axiom',
        'eventuality',
        'constantly',
        'night and day',
