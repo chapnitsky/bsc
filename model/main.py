@@ -86,6 +86,17 @@ if __name__ == "__main__":
             if line and not "==" in line and sizer > MIN:
                 # sentences = re.split(r'[.?!]\s* ', line)
                 sentences = sent_tokenize(line)
+                sentences = list(sentences)
+                for sen in sentences:
+                    tmp = ''
+                    size = len(sen)
+                    for k in range(size):
+                        if sen[k] == '.':
+                            if k + 2 < size and (not str(sen[k+1]).isalpha() and not str(sen[k+1]).isdigit()) and sen[k+2] != '.':
+                                tmp = sen[k + 1:]
+                                sentences.append(tmp)
+                                sen = sen[:k + 1]
+                                break
                 if sentences[-1]:
                     cleaned[i].append(sentences)
                 else:
