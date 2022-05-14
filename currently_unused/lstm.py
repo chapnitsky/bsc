@@ -5,6 +5,25 @@ import spacy
 import time
 import random
 import pandas as pd
+from torch.utils.data import Dataset
+
+
+class SenDataSet(Dataset):
+    def __init__(self, transformer, data_frame):
+        self.data = data_frame
+        self.transform = transformer
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, index):
+        sen = self.data['sen_id'][index]
+        typ = self.data['label'][index]
+
+        sen = self.transform(sen)
+        label = torch.tensor(typ, dtype=torch.long)
+
+        return sen, label
 
 
 class RNN(torch.nn.Module):
