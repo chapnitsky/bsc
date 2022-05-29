@@ -72,9 +72,8 @@ if __name__ == "__main__":
                 sentences = sent_tokenize(line)
                 sentences = list(sentences)
                 for sen in sentences:
-
                     tmp = ''
-                    sen = re.sub(r'[^\x00-\x7f]', r' ', sen)
+                    sen = ''.join([x for x in sen if x.isalnum() or x in string.punctuation or x == ' '])
                     size = len(sen)
                     for k in range(size):
                         if sen[k] == '.':
