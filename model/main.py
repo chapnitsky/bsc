@@ -3,6 +3,8 @@ import wikipedia as w
 import pickle as pkl
 import os
 import numpy as np
+import re
+import string
 import pandas as pd
 import matplotlib.pyplot as plt
 from gensim.test.utils import datapath, get_tmpfile
@@ -55,24 +57,7 @@ if __name__ == "__main__":
     model = ''
     col_name = 'text'
     df = pd.DataFrame(columns=[col_name])
-    # if not os.path.isfile('model.pkl'):
-    #     glove_file = datapath(f'{os.getcwd()}/glove.6B.100d.txt')
-    #     word2vec_glove_file = get_tmpfile('glove.6B.100d.word2vec.txt')
-    #     glove2word2vec(glove_file, word2vec_glove_file)
-    #     model = KeyedVectors.load_word2vec_format(word2vec_glove_file)
-    # else:
-    #     with open('model.pkl', 'rb') as f:
-    #         model = pkl.load(f)
 
-    # sim = model.most_similar('always')
-    # for s in sim:
-    #     print(str(s))
-    # result = model.most_similar(positive=['woman', 'king'], negative=['man'])
-    # print("{}: {:.4f}".format(*result[0]))
-    # print(analogy('japan', 'japanese', 'russia'))
-    #
-    # visual_pca(model, words=['sex', 'wife', 'wine', 'brandy', 'spaghetti', 'hamburger', 'pizza', 'frog',
-    #                          'ape', 'germany', 'france', 'israel', 'italy', 'school', 'homework', 'college'], sample=50)
     cleaned = {}
     MIN = 60
     for i in range(articles_num):
@@ -84,11 +69,12 @@ if __name__ == "__main__":
 
             sizer = len(line)
             if line and not "==" in line and sizer > MIN:
-                # sentences = re.split(r'[.?!]\s* ', line)
                 sentences = sent_tokenize(line)
                 sentences = list(sentences)
                 for sen in sentences:
+
                     tmp = ''
+                    sen = re.sub(r'[^\x00-\x7f]', r' ', sen)
                     size = len(sen)
                     for k in range(size):
                         if sen[k] == '.':
@@ -102,7 +88,6 @@ if __name__ == "__main__":
                 else:
                     cleaned[i].append(sentences[:-1])
 
-                # cleaned.extend([sentence for sentence in line.split(])
                 print(f'iteration {j} (size = {sizer}): {line}\n')
 
     cleaned_sorted = {}
@@ -130,6 +115,3 @@ if __name__ == "__main__":
 
     df.to_csv(f'{os.getcwd()}/data.csv', index=False)
 
-    #
-    # with open('model.pkl', 'wb') as f:
-    #     pkl.dump(model, f, protocol=pkl.HIGHEST_PROTOCOL)
