@@ -1,4 +1,10 @@
+# from gensim.test.utils import datapath, get_tmpfile
+# from gensim.models import KeyedVectors
+# from gensim.scripts.glove2word2vec import glove2word2vec
 #
+## nltk.download('punkt')
+
+
 # if not os.path.isfile('model.pkl'):
 #     glove_file = datapath(f'{os.getcwd()}/glove.6B.100d.txt')
 #     word2vec_glove_file = get_tmpfile('glove.6B.100d.word2vec.txt')

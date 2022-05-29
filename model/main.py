@@ -7,17 +7,12 @@ import re
 import string
 import pandas as pd
 import matplotlib.pyplot as plt
-from gensim.test.utils import datapath, get_tmpfile
-from gensim.models import KeyedVectors
-from gensim.scripts.glove2word2vec import glove2word2vec
 from wikipedia.exceptions import WikipediaException
 from articles import arr, resoning_words
 from nltk.tokenize import sent_tokenize
 from mongo import coll
-import csv
 
 
-# nltk.download('punkt')
 
 
 def get_wiki_content(index) -> list:
@@ -73,6 +68,8 @@ if __name__ == "__main__":
                 sentences = list(sentences)
                 for sen in sentences:
                     tmp = ''
+                    if not re.match('^[A-Za-z0-9.,:;!?()]+$', sen):  # Skip not english sentences
+                        continue
                     sen = ''.join([x for x in sen if x.isalnum() or x in string.punctuation or x == ' '])
                     size = len(sen)
                     for k in range(size):
