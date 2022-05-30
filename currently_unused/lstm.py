@@ -1,6 +1,6 @@
 import torch
 import torch.nn.functional as F
-import torchtext
+import torchtext.legacy as torchtext
 import spacy
 import time
 import random
@@ -99,11 +99,16 @@ NUM_CLASSES = 2  # Default or not
 
 df = pd.read_csv('defaults.csv')
 TEXT = torchtext.legacy.data.Field(tokenize='spacy', tokenizer_language='en_core_web_sm')
-
+#
 LABEL = torchtext.legacy.data.LabelField(dtype=torch.long)
 fields = [('TEXT_COLUMN_NAME', TEXT), ('LABEL_COLUMN_NAME', LABEL)]
+data_transforms = trans.Compose([
+        # transform to tensors
+        trans.ToTensor(),
+        # Normalize the pixel values (in R, G, and B channels)
 
-dataset = torchtext.legacy.data.TabularDataset(path='defaults.csv', format='csv', skip_header=True, fields=fields)
+])
+dataset = SenDataSet(data_frame=df, transformer=data_transforms)
 train_data, test_data = dataset.split(split_ratio=[0.8, 0.2], random_state=random.seed(RANDOM_SEED))
 train_data, valid_data = train_data.split(split_ratio=[0.85, 0.15], random_state=random.seed(RANDOM_SEED))
 TEXT.build_vocab(train_data, max_size=VOCABULARY_SIZE)
