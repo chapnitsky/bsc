@@ -9,9 +9,8 @@ from torch.utils.data import Dataset
 
 
 class SenDataSet(Dataset):
-    def __init__(self, transformer, data_frame):
+    def __init__(self, data_frame):
         self.data = data_frame
-        self.transform = transformer
 
     def __len__(self):
         return len(self.data)
@@ -19,8 +18,6 @@ class SenDataSet(Dataset):
     def __getitem__(self, index):
         sen = self.data['sen_id'][index]
         typ = self.data['label'][index]
-
-        sen = self.transform(sen)
         label = torch.tensor(typ, dtype=torch.long)
 
         return sen, label
@@ -102,13 +99,8 @@ TEXT = torchtext.legacy.data.Field(tokenize='spacy', tokenizer_language='en_core
 #
 LABEL = torchtext.legacy.data.LabelField(dtype=torch.long)
 fields = [('TEXT_COLUMN_NAME', TEXT), ('LABEL_COLUMN_NAME', LABEL)]
-data_transforms = trans.Compose([
-        # transform to tensors
-        trans.ToTensor(),
-        # Normalize the pixel values (in R, G, and B channels)
 
-])
-dataset = SenDataSet(data_frame=df, transformer=data_transforms)
+dataset = SenDataSet(data_frame=df)
 train_data, test_data = dataset.split(split_ratio=[0.8, 0.2], random_state=random.seed(RANDOM_SEED))
 train_data, valid_data = train_data.split(split_ratio=[0.85, 0.15], random_state=random.seed(RANDOM_SEED))
 TEXT.build_vocab(train_data, max_size=VOCABULARY_SIZE)
