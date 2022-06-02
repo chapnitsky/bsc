@@ -1,11 +1,11 @@
-import torch
-import torch.nn.functional as F
-import torchtext.legacy as torchtext
 import spacy
 import time
 import random
 import pandas as pd
-from torch.utils.data import Dataset
+import torchtext
+import torch
+from torch.utils.data import Dataset, random_split
+import torch.nn.functional as F
 
 
 class SenDataSet(Dataset):
@@ -82,85 +82,86 @@ def predict_def(model, sentence):
     return prediction[0][0].item()
 
 
-RANDOM_SEED = 58
-torch.manual_seed(RANDOM_SEED)
+if __name__ == "__main__":
+    df = pd.read_csv('defaults.csv')
 
-VOCABULARY_SIZE = 200
-LEARNING_RATE = 0.005
-BATCH_SIZE = 25
-NUM_EPOCHS = 15
-DEVICE = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
-EMBEDDING_DIM = 128
-HIDDEN_DIM = 256
-NUM_CLASSES = 2  # Default or not
+    RANDOM_SEED = 58
+    torch.manual_seed(RANDOM_SEED)
+    VOCABULARY_SIZE = 200
+    LEARNING_RATE = 0.005
+    BATCH_SIZE = 25
+    NUM_EPOCHS = 15
+    DEVICE = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+    EMBEDDING_DIM = 128
+    HIDDEN_DIM = 256
+    NUM_CLASSES = 2  # Default or not
 
-df = pd.read_csv('defaults.csv')
-TEXT = torchtext.legacy.data.Field(tokenize='spacy', tokenizer_language='en_core_web_sm')
-#
-LABEL = torchtext.legacy.data.LabelField(dtype=torch.long)
-fields = [('TEXT_COLUMN_NAME', TEXT), ('LABEL_COLUMN_NAME', LABEL)]
+    TEXT = torchtext.legacy.data.Field(tokenize='spacy', tokenizer_language='en_core_web_sm')
+    LABEL = torchtext.legacy.data.LabelField(dtype=torch.long)
+    fields = [('TEXT_COLUMN_NAME', TEXT), ('LABEL_COLUMN_NAME', LABEL)]
 
-dataset = SenDataSet(data_frame=df)
-train_data, test_data = dataset.split(split_ratio=[0.8, 0.2], random_state=random.seed(RANDOM_SEED))
-train_data, valid_data = train_data.split(split_ratio=[0.85, 0.15], random_state=random.seed(RANDOM_SEED))
-TEXT.build_vocab(train_data, max_size=VOCABULARY_SIZE)
-LABEL.build_vocab(train_data)
-train_loader, valid_loader, test_loader = \
-    torchtext.legacy.data.BucketIterator.splits(
-        (train_data, valid_data, test_data),
-        batch_size=BATCH_SIZE,
-        sort_within_batch=False,
-        sort_key=lambda x: len(x.TEXT_COLUMN_NAME),
-        device=DEVICE
+    dataset = SenDataSet(data_frame=df)
+    TOTAL_SIZE = len(dataset)
+    TRAIN_SIZE = .7 * TOTAL_SIZE
+    VAL_SIZE = .1 * TOTAL_SIZE
+    TEST_SIZE = .2 * TOTAL_SIZE
+    train_data, valid_data, test_data = random_split(dataset, [int(TRAIN_SIZE), int(VAL_SIZE), int(TEST_SIZE)])
+    TEXT.build_vocab(train_data, max_size=VOCABULARY_SIZE)
+    LABEL.build_vocab(train_data)
+    train_loader, valid_loader, test_loader = torchtext.legacy.data.BucketIterator.splits(
+            (train_data, valid_data, test_data),
+            batch_size=BATCH_SIZE,
+            sort_within_batch=False,
+            sort_key=lambda x: len(x.TEXT_COLUMN_NAME),
+            device=DEVICE
     )
 
-torch.manual_seed(RANDOM_SEED)
-model = RNN(input_dim=len(TEXT.vocab),
-            embedding_dim=EMBEDDING_DIM,
-            hidden_dim=HIDDEN_DIM,
-            output_dim=NUM_CLASSES  # could use 1 for binary classification
-            )
+    model = RNN(input_dim=len(TEXT.vocab),
+                embedding_dim=EMBEDDING_DIM,
+                hidden_dim=HIDDEN_DIM,
+                output_dim=NUM_CLASSES  # could use 1 for binary classification
+    )
 
-model = model.to(DEVICE)
-optimizer = torch.optim.Adam(model.parameters(), lr=0.005)
+    model = model.to(DEVICE)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.005)
 
-start_time = time.time()
+    start_time = time.time()
 
-for epoch in range(NUM_EPOCHS):
-    model.train()
-    for batch_idx, batch_data in enumerate(train_loader):
+    for epoch in range(NUM_EPOCHS):
+        model.train()
+        for batch_idx, batch_data in enumerate(train_loader):
 
-        text = batch_data.TEXT_COLUMN_NAME.to(DEVICE)
-        labels = batch_data.LABEL_COLUMN_NAME.to(DEVICE)
+            text = batch_data.TEXT_COLUMN_NAME.to(DEVICE)
+            labels = batch_data.LABEL_COLUMN_NAME.to(DEVICE)
 
-        ### FORWARD AND BACK PROP
-        logits = model(text)
-        loss = F.cross_entropy(logits, labels)
-        optimizer.zero_grad()
+            ### FORWARD AND BACK PROP
+            logits = model(text)
+            loss = F.cross_entropy(logits, labels)
+            optimizer.zero_grad()
 
-        loss.backward()
+            loss.backward()
 
-        ### UPDATE MODEL PARAMETERS
-        optimizer.step()
+            ### UPDATE MODEL PARAMETERS
+            optimizer.step()
 
-        ### LOGGING
-        if not batch_idx % 50:
-            print(f'Epoch: {epoch + 1:03d}/{NUM_EPOCHS:03d} | '
-                  f'Batch {batch_idx:03d}/{len(train_loader):03d} | '
-                  f'Loss: {loss:.4f}')
+            ### LOGGING
+            if not batch_idx % 50:
+                print(f'Epoch: {epoch + 1:03d}/{NUM_EPOCHS:03d} | '
+                      f'Batch {batch_idx:03d}/{len(train_loader):03d} | '
+                      f'Loss: {loss:.4f}')
 
-    with torch.set_grad_enabled(False):
-        print(f'training accuracy: '
-              f'{compute_accuracy(model, train_loader, DEVICE):.2f}%'
-              f'\nvalid accuracy: '
-              f'{compute_accuracy(model, valid_loader, DEVICE):.2f}%')
+        with torch.set_grad_enabled(False):
+            print(f'training accuracy: '
+                  f'{compute_accuracy(model, train_loader, DEVICE):.2f}%'
+                  f'\nvalid accuracy: '
+                  f'{compute_accuracy(model, valid_loader, DEVICE):.2f}%')
 
-    print(f'Time elapsed: {(time.time() - start_time) / 60:.2f} min')
+        print(f'Time elapsed: {(time.time() - start_time) / 60:.2f} min')
 
-print(f'Total Training Time: {(time.time() - start_time) / 60:.2f} min')
-print(f'Test accuracy: {compute_accuracy(model, test_loader, DEVICE):.2f}%')
+    print(f'Total Training Time: {(time.time() - start_time) / 60:.2f} min')
+    print(f'Test accuracy: {compute_accuracy(model, test_loader, DEVICE):.2f}%')
 
-nlp = spacy.blank("en")
+    nlp = spacy.blank("en")
 
-print('Probability positive:')
-predict_def(model, "This is such an awesome movie, I really love it!")
+    print('Probability positive:')
+    predict_def(model, "This is such an awesome movie, I really love it!")
