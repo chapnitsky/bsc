@@ -1,6 +1,5 @@
 import spacy
 import time
-import random
 import numpy as np
 import pandas as pd
 import torchtext
@@ -105,18 +104,22 @@ if __name__ == "__main__":
     TOTAL_SIZE = len(dataset)
     TRAIN_PERCENT, VAL_PERCENT, TEST_PERCENT = .33333, .33333, .33333
 
-    TRAIN_SIZE = TRAIN_PERCENT * TOTAL_SIZE
-    VAL_SIZE = VAL_PERCENT * TOTAL_SIZE
-    TEST_SIZE = TEST_PERCENT * TOTAL_SIZE
-    train_data, valid_data, test_data = random_split(dataset, [int(np.ceil(TRAIN_SIZE)), int(np.ceil(VAL_SIZE)), int(np.ceil(TEST_SIZE))])
-    TEXT.build_vocab(train_data, max_size=VOCABULARY_SIZE)
+    TRAIN_SIZE = int(np.ceil(TRAIN_PERCENT * TOTAL_SIZE))
+    VAL_SIZE = int(np.ceil(VAL_PERCENT * TOTAL_SIZE))
+    TEST_SIZE = int(np.ceil(TEST_PERCENT * TOTAL_SIZE))
+    tttt1 = dataset[:TRAIN_SIZE]
+    tttt2 = dataset[TRAIN_SIZE: TRAIN_SIZE + VAL_SIZE]
+    tttt3 = dataset[TRAIN_SIZE+VAL_SIZE: TRAIN_SIZE+VAL_SIZE+TEST_SIZE]
+    train_data, valid_data, test_data = random_split(dataset, [int(np.ceil(TRAIN_SIZE)), int(np.ceil(VAL_SIZE)),
+                                                               int(np.ceil(TEST_SIZE))])
+    TEXT.build_vocab(train_data)
     LABEL.build_vocab(train_data)
     train_loader, valid_loader, test_loader = torchtext.legacy.data.BucketIterator.splits(
-            (train_data, valid_data, test_data),
-            batch_size=BATCH_SIZE,
-            sort_within_batch=False,
-            sort_key=lambda x: len(x.TEXT_COLUMN_NAME),
-            device=DEVICE
+        (train_data, valid_data, test_data),
+        batch_size=BATCH_SIZE,
+        sort_within_batch=False,
+        sort_key=lambda x: len(x.TEXT_COLUMN_NAME),
+        device=DEVICE
     )
 
     model = RNN(input_dim=len(TEXT.vocab),
