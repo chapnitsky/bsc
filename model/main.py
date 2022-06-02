@@ -13,8 +13,6 @@ from nltk.tokenize import sent_tokenize
 from mongo import coll
 
 
-
-
 def get_wiki_content(index) -> list:
     # conts = []
     a = False
@@ -74,7 +72,8 @@ if __name__ == "__main__":
                     size = len(sen)
                     for k in range(size):
                         if sen[k] == '.':
-                            if k + 2 < size and (not str(sen[k+1]).isalpha() and not str(sen[k+1]).isdigit()) and sen[k+2] != '.':
+                            if k + 2 < size and (not str(sen[k + 1]).isalpha() and not str(sen[k + 1]).isdigit()) and \
+                                    sen[k + 2] != '.':
                                 tmp = sen[k + 1:]
                                 sentences.append(tmp)
                                 sen = sen[:k + 1]
@@ -110,4 +109,3 @@ if __name__ == "__main__":
             f'Article: {inds[0]}/{articles_num}, Paragraph: {inds[1]}/{par_len}, Sentence: {inds[2]}/{sent_len}:\n{pred[0]}\n')
 
     df.to_csv(f'{os.getcwd()}/data.csv', index=False)
-
