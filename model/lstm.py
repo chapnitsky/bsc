@@ -1,6 +1,7 @@
 import spacy
 import time
 import random
+import numpy as np
 import pandas as pd
 import torchtext
 import torch
@@ -16,8 +17,8 @@ class SenDataSet(Dataset):
         return len(self.data)
 
     def __getitem__(self, index):
-        sen = self.data['sen_id'][index]
-        typ = self.data['label'][index]
+        sen = self.data['sen'][index]
+        typ = self.data['isdefault'][index]
         label = torch.tensor(typ, dtype=torch.long)
 
         return sen, label
@@ -98,14 +99,16 @@ if __name__ == "__main__":
 
     TEXT = torchtext.legacy.data.Field(tokenize='spacy', tokenizer_language='en_core_web_sm')
     LABEL = torchtext.legacy.data.LabelField(dtype=torch.long)
-    fields = [('TEXT_COLUMN_NAME', TEXT), ('LABEL_COLUMN_NAME', LABEL)]
+    fields = [('sen', TEXT), ('isdefault', LABEL)]
 
     dataset = SenDataSet(data_frame=df)
     TOTAL_SIZE = len(dataset)
-    TRAIN_SIZE = .7 * TOTAL_SIZE
-    VAL_SIZE = .1 * TOTAL_SIZE
-    TEST_SIZE = .2 * TOTAL_SIZE
-    train_data, valid_data, test_data = random_split(dataset, [int(TRAIN_SIZE), int(VAL_SIZE), int(TEST_SIZE)])
+    TRAIN_PERCENT, VAL_PERCENT, TEST_PERCENT = .33333, .33333, .33333
+
+    TRAIN_SIZE = TRAIN_PERCENT * TOTAL_SIZE
+    VAL_SIZE = VAL_PERCENT * TOTAL_SIZE
+    TEST_SIZE = TEST_PERCENT * TOTAL_SIZE
+    train_data, valid_data, test_data = random_split(dataset, [int(np.ceil(TRAIN_SIZE)), int(np.ceil(VAL_SIZE)), int(np.ceil(TEST_SIZE))])
     TEXT.build_vocab(train_data, max_size=VOCABULARY_SIZE)
     LABEL.build_vocab(train_data)
     train_loader, valid_loader, test_loader = torchtext.legacy.data.BucketIterator.splits(
