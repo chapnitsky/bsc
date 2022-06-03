@@ -1,15 +1,18 @@
-import random
 
 import spacy
+# import ntlk
+
+# nltk.download('punkt')
+
 import time
-import numpy as np
+import random
 import pandas as pd
+import numpy as np
+# !pip uninstall torch
 import torchtext
 import torch
 from torch.utils.data import Dataset, random_split
 import torch.nn.functional as F
-
-
 class SenDataSet(Dataset):
     def __init__(self, data_frame):
         self.data = data_frame
