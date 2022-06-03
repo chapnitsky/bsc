@@ -92,7 +92,7 @@ if __name__ == "__main__":
     RANDOM_SEED = 58
     torch.manual_seed(RANDOM_SEED)
     VOCABULARY_SIZE = 2000
-    LEARNING_RATE = 1e-4
+    LEARNING_RATE = .005
     BATCH_SIZE = 15
     NUM_EPOCHS = 30
     DEVICE = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
@@ -188,6 +188,6 @@ if __name__ == "__main__":
     nlp = spacy.blank("en")
     max_train_acc = max(train_acc)
     max_valid_acc = max(valid_acc)
-    
+    torch.save(model.state_dict(), f'lstm{max_train_acc}.model')
     print('Probability positive:')
     predict_def(model, "This is such an awesome movie, I really love it!")
