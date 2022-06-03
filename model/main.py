@@ -46,7 +46,7 @@ def visual_pca(model, words=None, sample=0):
 
 
 if __name__ == "__main__":
-    articles_num = 4
+    articles_num = 20
     model = ''
     col_name = 'text'
     df = pd.DataFrame(columns=[col_name])
@@ -108,4 +108,4 @@ if __name__ == "__main__":
         print(
             f'Article: {inds[0]}/{articles_num}, Paragraph: {inds[1]}/{par_len}, Sentence: {inds[2]}/{sent_len}:\n{pred[0]}\n')
 
-    df.to_csv(f'{os.getcwd()}/data.csv', index=False)
+    df.to_csv(f'{os.getcwd()}/data{articles_num}.csv', index=False)

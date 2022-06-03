@@ -1,4 +1,3 @@
-
 import spacy
 # import ntlk
 
@@ -13,6 +12,8 @@ import torchtext
 import torch
 from torch.utils.data import Dataset, random_split
 import torch.nn.functional as F
+
+
 class SenDataSet(Dataset):
     def __init__(self, data_frame):
         self.data = data_frame
@@ -107,7 +108,8 @@ if __name__ == "__main__":
     dataset = torchtext.legacy.data.TabularDataset(path="defaults.csv", format="csv", skip_header=True, fields=fields)
     TRAIN_PERCENT, VAL_PERCENT, TEST_PERCENT = .33333, .33333, .33333
 
-    train_data, test_data = dataset.split(split_ratio=[TRAIN_PERCENT + VAL_PERCENT, TEST_PERCENT], random_state=random.seed(RANDOM_SEED))
+    train_data, test_data = dataset.split(split_ratio=[TRAIN_PERCENT + VAL_PERCENT, TEST_PERCENT],
+                                          random_state=random.seed(RANDOM_SEED))
 
     train_data, valid_data = train_data.split(
         split_ratio=[TRAIN_PERCENT, VAL_PERCENT],
@@ -171,7 +173,7 @@ if __name__ == "__main__":
                   f'\nvalid accuracy: '
                   f'{compute_accuracy(model, valid_loader, DEVICE):.2f}%')
 
-        print(f'Time elapsed: {(time.time() - start_time) / 60:.2f} min')
+        print(f'Time elapsed: {(time.time() - start_time) / 60:.2f} min\n')
 
     print(f'Total Training Time: {(time.time() - start_time) / 60:.2f} min')
     print(f'Test accuracy: {compute_accuracy(model, test_loader, DEVICE):.2f}%')
