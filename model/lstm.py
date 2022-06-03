@@ -1,3 +1,5 @@
+import random
+
 import spacy
 import time
 import numpy as np
@@ -18,7 +20,7 @@ class SenDataSet(Dataset):
     def __getitem__(self, index):
         sen = self.data['sen'][index]
         typ = self.data['isdefault'][index]
-        label = torch.tensor(typ, dtype=torch.long)
+        label = torch.tensor(np.array(typ), dtype=torch.long)
 
         return sen, label
 
@@ -83,8 +85,6 @@ def predict_def(model, sentence):
 
 
 if __name__ == "__main__":
-    df = pd.read_csv('defaults.csv')
-
     RANDOM_SEED = 58
     torch.manual_seed(RANDOM_SEED)
     VOCABULARY_SIZE = 200
@@ -100,25 +100,31 @@ if __name__ == "__main__":
     LABEL = torchtext.legacy.data.LabelField(dtype=torch.long)
     fields = [('sen', TEXT), ('isdefault', LABEL)]
 
-    dataset = SenDataSet(data_frame=df)
-    TOTAL_SIZE = len(dataset)
+    # dataset = SenDataSet(data_frame=df)
+    dataset = torchtext.legacy.data.TabularDataset(path="defaults.csv", format="csv", skip_header=True, fields=fields)
     TRAIN_PERCENT, VAL_PERCENT, TEST_PERCENT = .33333, .33333, .33333
 
-    TRAIN_SIZE = int(np.ceil(TRAIN_PERCENT * TOTAL_SIZE))
-    VAL_SIZE = int(np.ceil(VAL_PERCENT * TOTAL_SIZE))
-    TEST_SIZE = int(np.ceil(TEST_PERCENT * TOTAL_SIZE))
-    tttt1 = dataset[:TRAIN_SIZE]
-    tttt2 = dataset[TRAIN_SIZE: TRAIN_SIZE + VAL_SIZE]
-    tttt3 = dataset[TRAIN_SIZE+VAL_SIZE: TRAIN_SIZE+VAL_SIZE+TEST_SIZE]
-    train_data, valid_data, test_data = random_split(dataset, [int(np.ceil(TRAIN_SIZE)), int(np.ceil(VAL_SIZE)),
-                                                               int(np.ceil(TEST_SIZE))])
-    TEXT.build_vocab(train_data)
+    train_data, test_data = dataset.split(split_ratio=[TRAIN_PERCENT + VAL_PERCENT, TEST_PERCENT], random_state=random.seed(RANDOM_SEED))
+
+    train_data, valid_data = train_data.split(
+        split_ratio=[TRAIN_PERCENT, VAL_PERCENT],
+        random_state=random.seed(RANDOM_SEED))
+
+    print(f'Num Train: {len(train_data)}')
+    print(f'Num Validation: {len(valid_data)}')
+    print(f'Num Test: {len(test_data)}')
+
+    TEXT.build_vocab(train_data, max_size=VOCABULARY_SIZE)
     LABEL.build_vocab(train_data)
+    print(vars(train_data.examples[0]))
+
+    print(TEXT.vocab.freqs.most_common(20))
+
     train_loader, valid_loader, test_loader = torchtext.legacy.data.BucketIterator.splits(
         (train_data, valid_data, test_data),
         batch_size=BATCH_SIZE,
         sort_within_batch=False,
-        sort_key=lambda x: len(x.TEXT_COLUMN_NAME),
+        sort_key=lambda x: len(x.sen),
         device=DEVICE
     )
 
@@ -126,7 +132,7 @@ if __name__ == "__main__":
                 embedding_dim=EMBEDDING_DIM,
                 hidden_dim=HIDDEN_DIM,
                 output_dim=NUM_CLASSES  # could use 1 for binary classification
-    )
+                )
 
     model = model.to(DEVICE)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.005)
@@ -137,8 +143,8 @@ if __name__ == "__main__":
         model.train()
         for batch_idx, batch_data in enumerate(train_loader):
 
-            text = batch_data.TEXT_COLUMN_NAME.to(DEVICE)
-            labels = batch_data.LABEL_COLUMN_NAME.to(DEVICE)
+            text = batch_data.sen.to(DEVICE)
+            labels = batch_data.isdefault.to(DEVICE)
 
             ### FORWARD AND BACK PROP
             logits = model(text)
