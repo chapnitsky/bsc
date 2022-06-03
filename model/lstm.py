@@ -106,7 +106,7 @@ if __name__ == "__main__":
 
     # dataset = SenDataSet(data_frame=df)
     dataset = torchtext.legacy.data.TabularDataset(path="defaults.csv", format="csv", skip_header=True, fields=fields)
-    TRAIN_PERCENT, VAL_PERCENT, TEST_PERCENT = .33333, .33333, .33333
+    TRAIN_PERCENT, VAL_PERCENT, TEST_PERCENT = .7, .1, .2
 
     train_data, test_data = dataset.split(split_ratio=[TRAIN_PERCENT + VAL_PERCENT, TEST_PERCENT],
                                           random_state=random.seed(RANDOM_SEED))
@@ -144,6 +144,9 @@ if __name__ == "__main__":
 
     start_time = time.time()
 
+    loss = []
+    train_acc = []
+    valid_acc = []
     for epoch in range(NUM_EPOCHS):
         model.train()
         for batch_idx, batch_data in enumerate(train_loader):
@@ -168,10 +171,14 @@ if __name__ == "__main__":
                       f'Loss: {loss:.4f}')
 
         with torch.set_grad_enabled(False):
+            cur_train_acc = compute_accuracy(model, train_loader, DEVICE)
+            cur_valid_acc = compute_accuracy(model, valid_loader, DEVICE)
+            train_acc.append(cur_train_acc)
+            valid_acc.append(cur_valid_acc)
             print(f'training accuracy: '
-                  f'{compute_accuracy(model, train_loader, DEVICE):.2f}%'
+                  f'{cur_train_acc:.2f}%'
                   f'\nvalid accuracy: '
-                  f'{compute_accuracy(model, valid_loader, DEVICE):.2f}%')
+                  f'{cur_valid_acc:.2f}%')
 
         print(f'Time elapsed: {(time.time() - start_time) / 60:.2f} min\n')
 
@@ -179,6 +186,8 @@ if __name__ == "__main__":
     print(f'Test accuracy: {compute_accuracy(model, test_loader, DEVICE):.2f}%')
 
     nlp = spacy.blank("en")
-
+    max_train_acc = max(train_acc)
+    max_valid_acc = max(valid_acc)
+    
     print('Probability positive:')
     predict_def(model, "This is such an awesome movie, I really love it!")
