@@ -91,10 +91,10 @@ def predict_def(model, sentence):
 if __name__ == "__main__":
     RANDOM_SEED = 58
     torch.manual_seed(RANDOM_SEED)
-    VOCABULARY_SIZE = 200
-    LEARNING_RATE = 0.005
-    BATCH_SIZE = 25
-    NUM_EPOCHS = 15
+    VOCABULARY_SIZE = 2000
+    LEARNING_RATE = 1e-4
+    BATCH_SIZE = 15
+    NUM_EPOCHS = 30
     DEVICE = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
     EMBEDDING_DIM = 128
     HIDDEN_DIM = 256
@@ -140,7 +140,7 @@ if __name__ == "__main__":
                 )
 
     model = model.to(DEVICE)
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.005)
+    optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
     start_time = time.time()
 
