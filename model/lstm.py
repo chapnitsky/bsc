@@ -171,8 +171,8 @@ if __name__ == "__main__":
                       f'Loss: {loss:.4f}')
 
         with torch.set_grad_enabled(False):
-            cur_train_acc = compute_accuracy(model, train_loader, DEVICE)
-            cur_valid_acc = compute_accuracy(model, valid_loader, DEVICE)
+            cur_train_acc = round(compute_accuracy(model, train_loader, DEVICE), 4)
+            cur_valid_acc = round(compute_accuracy(model, valid_loader, DEVICE), 4)
             train_acc.append(cur_train_acc)
             valid_acc.append(cur_valid_acc)
             print(f'training accuracy: '
@@ -188,6 +188,6 @@ if __name__ == "__main__":
     nlp = spacy.blank("en")
     max_train_acc = max(train_acc)
     max_valid_acc = max(valid_acc)
-    torch.save(model.state_dict(), f'lstm{max_train_acc}.model')
+    torch.save(model.state_dict(), f'lstm{max_train_acc}/{max_valid_acc}.model')
     print('Probability positive:')
     predict_def(model, "This is such an awesome movie, I really love it!")
