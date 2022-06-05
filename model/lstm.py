@@ -1,12 +1,10 @@
 import spacy
-# import ntlk
-
-# nltk.download('punkt')
-
 import time
 import random
 import pandas as pd
 import numpy as np
+# nltk.download('punkt')
+# import ntlk
 # !pip uninstall torch
 import torchtext
 import torch
@@ -35,11 +33,8 @@ class RNN(torch.nn.Module):
         super().__init__()
 
         self.embedding = torch.nn.Embedding(input_dim, embedding_dim)
-        # self.rnn = torch.nn.RNN(embedding_dim,
-        #                        hidden_dim,
-        #                        nonlinearity='relu')
-        self.rnn = torch.nn.LSTM(embedding_dim,
-                                 hidden_dim)
+
+        self.rnn = torch.nn.LSTM(embedding_dim, hidden_dim)
 
         self.fc = torch.nn.Linear(hidden_dim, output_dim)
 
@@ -98,7 +93,7 @@ if __name__ == "__main__":
     DEVICE = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
     EMBEDDING_DIM = 128
     HIDDEN_DIM = 256
-    NUM_CLASSES = 2  # Default or not
+    NUM_CLASSES = 2  # Default or Not-Default
 
     TEXT = torchtext.legacy.data.Field(tokenize='spacy', tokenizer_language='en_core_web_sm')
     LABEL = torchtext.legacy.data.LabelField(dtype=torch.long)
@@ -136,7 +131,7 @@ if __name__ == "__main__":
     model = RNN(input_dim=len(TEXT.vocab),
                 embedding_dim=EMBEDDING_DIM,
                 hidden_dim=HIDDEN_DIM,
-                output_dim=NUM_CLASSES  # could use 1 for binary classification
+                output_dim=NUM_CLASSES
                 )
 
     model = model.to(DEVICE)
