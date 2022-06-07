@@ -7,6 +7,7 @@ import numpy as np
 # import ntlk
 # !pip uninstall torch
 import torchtext
+import matplotlib as plt
 import torch
 from torch.utils.data import Dataset, random_split
 import torch.nn.functional as F
@@ -98,8 +99,47 @@ def split_data(TRAIN_PERCENT, VAL_PERCENT, TEST_PERCENT, fields):
         random_state=random.seed(RANDOM_SEED))
         
     return train_data, valid_data, test_data
-    
+
+def visualize_model(model, test_loader, num_images=6, class_names):
+    #was_training = model.training
+    model.eval()
+    images_so_far = 1
+    corrects = 0
+    wrongs = 0
+    fig = plt.figure()
+
+    with torch.no_grad():
+        for i, (inputs, labels) in enumerate(test_loader):
+            inputs = inputs.to(device)
+            labels = labels.to(device)
+
+            outputs = model(inputs)
+            _, preds = torch.max(outputs, 1)
+            for j in range(inputs.size()[0]):
+                # ****status = |pred - actual| *****
+                status = int(abs(preds[j] - labels[j]))  # Not-Default = 0, Default = 1
+                if corrects + wrongs >= num_images:
+                    model.train(mode=was_training)
+                    return
+
+                if status == 0 and corrects < num_images//2: # Correct
+                    corrects += 1
+                elif status == 1 and wrongs < num_images//2: # Incorrect
+                    wrongs += 1
+                else:
+                    continue
+              
+                ax = plt.subplot(num_images//2, 2, images_so_far)
+                images_so_far += 1
+
+                ax.axis('off')
+                ax.set_title(f'predicted: {class_names[preds[j]]}, is_correct = {str(status == 0)}')
+                imshow(inputs.cpu().data[j])
+
+                    
+        #model.train(mode=was_training)
 if __name__ == "__main__":
+    class_names = {0: "Not-Default", 1: "Default"}
     RANDOM_SEED = 58
     torch.manual_seed(RANDOM_SEED)
     VOCABULARY_SIZE = 2000
@@ -173,7 +213,7 @@ if __name__ == "__main__":
                       f'Batch {batch_idx:03d}/{len(train_loader):03d} | '
                       f'Loss: {loss:.4f}')
 
-        with torch.set_grad_enabled(False):
+        with torch.no_grad():
             cur_train_acc = round(float(compute_accuracy(model, train_loader, DEVICE)), 4)
             cur_valid_acc = round(float(compute_accuracy(model, valid_loader, DEVICE)), 4)
             train_acc.append(cur_train_acc)
