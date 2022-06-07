@@ -83,6 +83,22 @@ def predict_def(model, sentence):
     return prediction[0][0].item()
 
 
+def split_data(TRAIN_PERCENT, VAL_PERCENT, TEST_PERCENT, fields):
+
+    
+    # dataset = SenDataSet(data_frame=df)
+
+    dataset = torchtext.legacy.data.TabularDataset(path="defaults.csv", format="csv", skip_header=True, fields=fields)
+
+    train_data, test_data = dataset.split(split_ratio=[TRAIN_PERCENT + VAL_PERCENT, TEST_PERCENT],
+                                          random_state=random.seed(RANDOM_SEED))
+
+    train_data, valid_data = train_data.split(
+        split_ratio=[TRAIN_PERCENT, VAL_PERCENT],
+        random_state=random.seed(RANDOM_SEED))
+        
+    return train_data, valid_data, test_data
+    
 if __name__ == "__main__":
     RANDOM_SEED = 58
     torch.manual_seed(RANDOM_SEED)
@@ -95,20 +111,12 @@ if __name__ == "__main__":
     HIDDEN_DIM = 256
     NUM_CLASSES = 2  # Default or Not-Default
 
+    TRAIN_PERCENT, VAL_PERCENT, TEST_PERCENT = .7, .1, .2
     TEXT = torchtext.legacy.data.Field(tokenize='spacy', tokenizer_language='en_core_web_sm')
     LABEL = torchtext.legacy.data.LabelField(dtype=torch.long)
     fields = [('sen', TEXT), ('isdefault', LABEL)]
-
-    # dataset = SenDataSet(data_frame=df)
-    dataset = torchtext.legacy.data.TabularDataset(path="defaults.csv", format="csv", skip_header=True, fields=fields)
-    TRAIN_PERCENT, VAL_PERCENT, TEST_PERCENT = .7, .1, .2
-
-    train_data, test_data = dataset.split(split_ratio=[TRAIN_PERCENT + VAL_PERCENT, TEST_PERCENT],
-                                          random_state=random.seed(RANDOM_SEED))
-
-    train_data, valid_data = train_data.split(
-        split_ratio=[TRAIN_PERCENT, VAL_PERCENT],
-        random_state=random.seed(RANDOM_SEED))
+    
+    train_data, valid_data, test_data = split_data(TRAIN_PERCENT, VAL_PERCENT, TEST_PERCENT, fields)
 
     print(f'Num Train: {len(train_data)}')
     print(f'Num Validation: {len(valid_data)}')
@@ -116,9 +124,9 @@ if __name__ == "__main__":
 
     TEXT.build_vocab(train_data, max_size=VOCABULARY_SIZE)
     LABEL.build_vocab(train_data)
-    print(vars(train_data.examples[0]))
-
-    print(TEXT.vocab.freqs.most_common(20))
+    
+    #print(vars(train_data.examples[0]))
+    #print(TEXT.vocab.freqs.most_common(20))
 
     train_loader, valid_loader, test_loader = torchtext.legacy.data.BucketIterator.splits(
         (train_data, valid_data, test_data),
