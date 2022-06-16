@@ -88,8 +88,6 @@ def predict_def(model, sentence):
 
 
 def split_data(TRAIN_PERCENT, VAL_PERCENT, TEST_PERCENT, fields):
-
-    
     # dataset = SenDataSet(data_frame=df)
 
     dataset = torchtext.legacy.data.TabularDataset(path="defaults.csv", format="csv", skip_header=True, fields=fields)
@@ -100,12 +98,13 @@ def split_data(TRAIN_PERCENT, VAL_PERCENT, TEST_PERCENT, fields):
     train_data, valid_data = train_data.split(
         split_ratio=[TRAIN_PERCENT, VAL_PERCENT],
         random_state=random.seed(RANDOM_SEED))
-        
+
     return train_data, valid_data, test_data
+
 
 def visualize_model(model, test_loader, class_names, num_images=6):
     global DEVICE
-    #was_training = model.training
+    # was_training = model.training
     model.eval()
     images_so_far = 1
     corrects = 0
@@ -126,22 +125,23 @@ def visualize_model(model, test_loader, class_names, num_images=6):
                     # model.train(mode=was_training)
                     return
 
-                if status == 0 and corrects < num_images//2: # Correct
+                if status == 0 and corrects < num_images // 2:  # Correct
                     corrects += 1
-                elif status == 1 and wrongs < num_images//2: # Incorrect
+                elif status == 1 and wrongs < num_images // 2:  # Incorrect
                     wrongs += 1
                 else:
                     continue
-              
-                ax = plt.subplot(num_images//2, 2, images_so_far)
+
+                ax = plt.subplot(num_images // 2, 2, images_so_far)
                 images_so_far += 1
 
                 ax.axis('off')
                 ax.set_title(f'predicted: {class_names[preds[j]]}, is_correct = {str(status == 0)}')
                 imshow(inputs.cpu().data[j])
 
-                    
-        #model.train(mode=was_training)
+        # model.train(mode=was_training)
+
+
 if __name__ == "__main__":
     class_names = {0: "Not-Default", 1: "Default"}
     NLP = spacy.blank("en")
@@ -160,7 +160,7 @@ if __name__ == "__main__":
     TEXT = torchtext.legacy.data.Field(tokenize='spacy', tokenizer_language='en_core_web_sm')
     LABEL = torchtext.legacy.data.LabelField(dtype=torch.long)
     fields = [('sen', TEXT), ('isdefault', LABEL)]
-    
+
     train_data, valid_data, test_data = split_data(TRAIN_PERCENT, VAL_PERCENT, TEST_PERCENT, fields)
 
     print(f'Num Train: {len(train_data)}')
@@ -169,9 +169,9 @@ if __name__ == "__main__":
 
     TEXT.build_vocab(train_data, max_size=VOCABULARY_SIZE)
     LABEL.build_vocab(train_data)
-    
-    #print(vars(train_data.examples[0]))
-    #print(TEXT.vocab.freqs.most_common(20))
+
+    # print(vars(train_data.examples[0]))
+    # print(TEXT.vocab.freqs.most_common(20))
 
     train_loader, valid_loader, test_loader = torchtext.legacy.data.BucketIterator.splits(
         (train_data, valid_data, test_data),
