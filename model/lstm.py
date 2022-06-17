@@ -7,8 +7,10 @@ import numpy as np
 # import ntlk
 # !pip uninstall torch
 import torchtext
+from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import torch
+import seaborn as sn
 from torch.utils.data import Dataset, random_split
 import torch.nn.functional as F
 from cv2 import imshow
@@ -58,6 +60,8 @@ class RNN(torch.nn.Module):
 
 
 def compute_accuracy(model, data_loader, device):
+    y_target = []
+    y_pred = []
     with torch.no_grad():
         correct_pred, num_examples = 0, 0
 
@@ -68,9 +72,13 @@ def compute_accuracy(model, data_loader, device):
             logits = model(features)
             _, predicted_labels = torch.max(logits, 1)
 
+            y_pred.extend(predicted_labels.data.cpu().numpy())
+            y_target.extend(targets.data.cpu().numpy())
+
             num_examples += targets.size(0)
             correct_pred += (predicted_labels == targets).sum()
-    return correct_pred.float() / num_examples * 100
+
+    return correct_pred.float() / num_examples * 100, (y_target, y_pred)
 
 
 def predict_def(model, sentence):
@@ -218,8 +226,8 @@ if __name__ == "__main__":
                       f'Loss: {loss:.4f}')
 
         with torch.no_grad():
-            cur_train_acc = round(float(compute_accuracy(model, train_loader, DEVICE)), 4)
-            cur_valid_acc = round(float(compute_accuracy(model, valid_loader, DEVICE)), 4)
+            cur_train_acc = round(float(compute_accuracy(model, train_loader, DEVICE)[0]), 4)
+            cur_valid_acc = round(float(compute_accuracy(model, valid_loader, DEVICE)[0]), 4)
             train_acc.append(cur_train_acc)
             valid_acc.append(cur_valid_acc)
             print(f'training accuracy: '
@@ -230,7 +238,16 @@ if __name__ == "__main__":
         print(f'Time elapsed: {(time.time() - start_time) / 60:.2f} min\n')
 
     print(f'Total Training Time: {(time.time() - start_time) / 60:.2f} min')
-    print(f'Test accuracy: {compute_accuracy(model, test_loader, DEVICE):.2f}%')
+
+    test_acc, ys = compute_accuracy(model, test_loader, DEVICE)
+    print(f'Test accuracy: {test_acc:.2f}%')
+
+    cf_matrix = confusion_matrix(ys[0], ys[1])
+    df_cm = pd.DataFrame(cf_matrix / np.sum(cf_matrix) * 10, index=[str(i) for i in class_names.values()],
+                         columns=[str(i) for i in class_names.values()])
+    plt.figure(figsize=(12, 7))
+    sn.heatmap(df_cm, annot=True)
+    plt.savefig('conf.png')
 
     max_train_acc = max(train_acc)
     max_valid_acc = max(valid_acc)
