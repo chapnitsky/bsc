@@ -1,1 +1,0 @@
-mongodb+srv://root:<password>@cluster0.8cdgo.mongodb.net/test

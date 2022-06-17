@@ -7,7 +7,7 @@ import numpy as np
 # import ntlk
 # !pip uninstall torch
 import torchtext
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import torch
 from torch.utils.data import Dataset, random_split
 import torch.nn.functional as F
@@ -104,7 +104,7 @@ def split_data(TRAIN_PERCENT, VAL_PERCENT, TEST_PERCENT, fields):
 
 def visualize_model(model, test_loader, class_names, num_images=6):
     global DEVICE
-    # was_training = model.training
+
     model.eval()
     images_so_far = 1
     corrects = 0
@@ -138,8 +138,6 @@ def visualize_model(model, test_loader, class_names, num_images=6):
                 ax.axis('off')
                 ax.set_title(f'predicted: {class_names[preds[j]]}, is_correct = {str(status == 0)}')
                 imshow(inputs.cpu().data[j])
-
-        # model.train(mode=was_training)
 
 
 if __name__ == "__main__":
@@ -186,57 +184,64 @@ if __name__ == "__main__":
                 hidden_dim=HIDDEN_DIM,
                 output_dim=NUM_CLASSES
                 )
-    model.load_state_dict(torch.load('TRAIN_98.1915__VALID53.7313.pt'))
-    # model = model.to(DEVICE)
-    # optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
-    #
-    # start_time = time.time()
-    #
-    # loss = []
-    # train_acc = []
-    # valid_acc = []
-    # for epoch in range(NUM_EPOCHS):
-    #     model.train()
-    #     for batch_idx, batch_data in enumerate(train_loader):
-    #
-    #         text = batch_data.sen.to(DEVICE)
-    #         labels = batch_data.isdefault.to(DEVICE)
-    #
-    #         ### FORWARD AND BACK PROP
-    #         logits = model(text)
-    #         loss = F.cross_entropy(logits, labels)
-    #         optimizer.zero_grad()
-    #
-    #         loss.backward()
-    #
-    #         ### UPDATE MODEL PARAMETERS
-    #         optimizer.step()
-    #
-    #         ### LOGGING
-    #         if not batch_idx % 50:
-    #             print(f'Epoch: {epoch + 1:03d}/{NUM_EPOCHS:03d} | '
-    #                   f'Batch {batch_idx:03d}/{len(train_loader):03d} | '
-    #                   f'Loss: {loss:.4f}')
-    #
-    #     with torch.no_grad():
-    #         cur_train_acc = round(float(compute_accuracy(model, train_loader, DEVICE)), 4)
-    #         cur_valid_acc = round(float(compute_accuracy(model, valid_loader, DEVICE)), 4)
-    #         train_acc.append(cur_train_acc)
-    #         valid_acc.append(cur_valid_acc)
-    #         print(f'training accuracy: '
-    #               f'{cur_train_acc:.2f}%'
-    #               f'\nvalid accuracy: '
-    #               f'{cur_valid_acc:.2f}%')
-    #
-    #     print(f'Time elapsed: {(time.time() - start_time) / 60:.2f} min\n')
-    #
-    # print(f'Total Training Time: {(time.time() - start_time) / 60:.2f} min')
-    # print(f'Test accuracy: {compute_accuracy(model, test_loader, DEVICE):.2f}%')
-    #
+    # model.load_state_dict(torch.load('TRAIN_98.1915__VALID53.7313.pt'))
+    model = model.to(DEVICE)
+    optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
-    # max_train_acc = max(train_acc)
-    # max_valid_acc = max(valid_acc)
-    # torch.save(model.state_dict(), f'TRAIN_{max_train_acc}__VALID{max_valid_acc}.pt')
+    start_time = time.time()
+
+    loss_data = []
+    train_acc = []
+    valid_acc = []
+    for epoch in range(NUM_EPOCHS):
+        model.train()
+        for batch_idx, batch_data in enumerate(train_loader):
+
+            text = batch_data.sen.to(DEVICE)
+            labels = batch_data.isdefault.to(DEVICE)
+
+            ### FORWARD AND BACK PROP
+            logits = model(text)
+            loss = F.cross_entropy(logits, labels)
+            loss_data.append(float(loss.item()))
+            optimizer.zero_grad()
+
+            loss.backward()
+
+            ### UPDATE MODEL PARAMETERS
+            optimizer.step()
+
+            ### LOGGING
+            if not batch_idx % 50:
+                print(f'Epoch: {epoch + 1:03d}/{NUM_EPOCHS:03d} | '
+                      f'Batch {batch_idx:03d}/{len(train_loader):03d} | '
+                      f'Loss: {loss:.4f}')
+
+        with torch.no_grad():
+            cur_train_acc = round(float(compute_accuracy(model, train_loader, DEVICE)), 4)
+            cur_valid_acc = round(float(compute_accuracy(model, valid_loader, DEVICE)), 4)
+            train_acc.append(cur_train_acc)
+            valid_acc.append(cur_valid_acc)
+            print(f'training accuracy: '
+                  f'{cur_train_acc:.2f}%'
+                  f'\nvalid accuracy: '
+                  f'{cur_valid_acc:.2f}%')
+
+        print(f'Time elapsed: {(time.time() - start_time) / 60:.2f} min\n')
+
+    print(f'Total Training Time: {(time.time() - start_time) / 60:.2f} min')
+    print(f'Test accuracy: {compute_accuracy(model, test_loader, DEVICE):.2f}%')
+
+    max_train_acc = max(train_acc)
+    max_valid_acc = max(valid_acc)
+    min_loss_val = min(loss_data)
+    plt.plot(loss_data)
+    plt.show()
+    plt.figure(figsize=(15, 15))
+    plt.plot(train_acc)
+    plt.plot(valid_acc)
+    plt.show()
+    torch.save(model.state_dict(), f'TRAIN_{max_train_acc}__VALID{max_valid_acc}.pt')
     stringtest = "When it is rainning outside you need an umbrella."
     pred = predict_def(model, stringtest)
     print(f'{stringtest}\nis type of: {class_names[pred]}')

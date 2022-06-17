@@ -1,2 +1,0 @@
-{"sen": "If its rainning usually wear a coat.", "isdefault": 1}
-{"sen": "The industrial evoulation changed a lot.", "isdefault": 0}
