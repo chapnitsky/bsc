@@ -247,6 +247,7 @@ if __name__ == "__main__":
                          columns=[str(i) for i in class_names.values()])
     plt.figure(figsize=(12, 7))
     sn.heatmap(df_cm, annot=True)
+    plt.show()
     plt.savefig('conf.png')
 
     max_train_acc = max(train_acc)
