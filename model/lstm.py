@@ -235,11 +235,18 @@ if __name__ == "__main__":
     max_train_acc = max(train_acc)
     max_valid_acc = max(valid_acc)
     min_loss_val = min(loss_data)
+
+    plt.style.use('fivethirtyeight')
+    plt.title(f'Cross Entropy Loss, minimum: {min_loss_val}')
     plt.plot(loss_data)
     plt.show()
     plt.figure(figsize=(15, 15))
+    plt.title(f'Train & Valid Accuracy')
     plt.plot(train_acc)
     plt.plot(valid_acc)
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy %')
+    plt.legend([f'Train with max: {max_train_acc}', f'Valid with max: {max_valid_acc}'], loc='best')
     plt.show()
     torch.save(model.state_dict(), f'TRAIN_{max_train_acc}__VALID{max_valid_acc}.pt')
     stringtest = "When it is rainning outside you need an umbrella."
