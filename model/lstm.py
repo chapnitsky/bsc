@@ -43,17 +43,9 @@ class RNN(torch.nn.Module):
         self.fc = torch.nn.Linear(hidden_dim, output_dim)
 
     def forward(self, text):
-        # text dim: [sentence length, batch size]
-
         embedded = self.embedding(text)
-        # embedded dim: [sentence length, batch size, embedding dim]
-
         output, (hidden, cell) = self.rnn(embedded)
-        # output dim: [sentence length, batch size, hidden dim]
-        # hidden dim: [1, batch size, hidden dim]
-
         hidden.squeeze_(0)
-        # hidden dim: [batch size, hidden dim]
 
         output = self.fc(hidden)
         return output
@@ -108,44 +100,6 @@ def split_data(TRAIN_PERCENT, VAL_PERCENT, TEST_PERCENT, fields):
         random_state=random.seed(RANDOM_SEED))
 
     return train_data, valid_data, test_data
-
-
-def visualize_model(model, test_loader, class_names, num_images=6):
-    global DEVICE
-
-    model.eval()
-    images_so_far = 1
-    corrects = 0
-    wrongs = 0
-    fig = plt.figure()
-
-    with torch.no_grad():
-        for i, (inputs, labels) in enumerate(test_loader):
-            inputs = inputs.to(DEVICE)
-            labels = labels.to(DEVICE)
-
-            outputs = model(inputs)
-            _, preds = torch.max(outputs, 1)
-            for j in range(inputs.size()[0]):
-                # ****status = |pred - actual| *****
-                status = int(abs(preds[j] - labels[j]))  # Not-Default = 0, Default = 1
-                if corrects + wrongs >= num_images:
-                    # model.train(mode=was_training)
-                    return
-
-                if status == 0 and corrects < num_images // 2:  # Correct
-                    corrects += 1
-                elif status == 1 and wrongs < num_images // 2:  # Incorrect
-                    wrongs += 1
-                else:
-                    continue
-
-                ax = plt.subplot(num_images // 2, 2, images_so_far)
-                images_so_far += 1
-
-                ax.axis('off')
-                ax.set_title(f'predicted: {class_names[preds[j]]}, is_correct = {str(status == 0)}')
-                imshow(inputs.cpu().data[j])
 
 
 if __name__ == "__main__":
