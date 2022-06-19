@@ -1,4 +1,16 @@
-# Default Reasoning in text corpus
-B.sc Project
+# Finding Default in Text Corpuss
+# My B.sc Project
 
-Creating guesses on wikipedia articles sentences-> Showing results in a custom website -> Ask the user for validation of the data -> Gather data -> train & test our deep neural network with: Embedding, LSTM and finally a Fully Connected layer.
+Creating guesses on wikipedia articles sentences
+                  |
+                  v 
+Showing results in a custom website
+                  |
+                  v
+Ask the user for validation of the data
+                  |
+                  v
+            Gather data
+                  |
+                  v
+train & test our deep neural network with: Embedding, LSTM and finally a Fully Connected layer
