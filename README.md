@@ -1,5 +1,5 @@
 # Finding Default in Text Corpuss
-
+# B.sc
 Creating guesses on wikipedia articles sentences
                   |
                   v 
