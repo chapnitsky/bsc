@@ -13,10 +13,10 @@
         <ul>
                 {% if sentences.ans == 1 %}
                     <li><h3>{{sentences.sentence}}</h3></li>
-                    <div class="axiom">Axiom</div>
+                    <div class="axiom">Does this sentence represent a Default?</div>
                 {% else %}
                     <li><h3>{{sentences.sentence}}</h3></li>
-                    <div class="notaxiom">Not Axiom</div>
+                    <div class="notaxiom">Does this sentence represent a Not-Default?</div>
 
                 {% endif %}
         </ul>
