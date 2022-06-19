@@ -46,7 +46,7 @@ def visual_pca(model, words=None, sample=0):
 
 
 if __name__ == "__main__":
-    articles_num = 20
+    articles_num = 5
     model = ''
     col_name = 'text'
     df = pd.DataFrame(columns=[col_name])
@@ -99,7 +99,7 @@ if __name__ == "__main__":
                     preds.append((parag[z], (int(key), int(j), int(z))))
 
     for ind, pred in enumerate(preds):
-        # coll.insert_one({"sentence": str(pred[0]), "ans": 1, "checked": False})
+        coll.insert_one({"sentence": str(pred[0]), "ans": 1, "checked": False})
         df.loc[ind] = [pred[0]]  # For AWS MTurk
         # print(df)
         inds = pred[-1]
