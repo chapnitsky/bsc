@@ -22,7 +22,6 @@ def get_wiki_content(index) -> list:
         a = True
 
 
-
 if __name__ == "__main__":
     articles_num = 5
     model = ''
