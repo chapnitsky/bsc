@@ -1,4 +1,3 @@
-from sklearn.decomposition import PCA
 import wikipedia as w
 import pickle as pkl
 import os
