@@ -16,7 +16,7 @@ def login(request):
 
 def decide_action(request, string):
     decision = string[-1]
-    # print(f'string: {string[:-1]}')
+
     filt = {"_id": ObjectId(string[:-1])}
     new_val = None
     if decision == '!':
@@ -47,7 +47,6 @@ def checker(request):
     y = res
     y['id'] = str(y.pop('_id'))
     object_name = namedtuple("Sentence", y.keys())(*y.values())
-    # print(f'document: {object_name}\n')
 
     return render(request, 'web/home.html', {"Title": "Home", "act": "", "h1_base": "Home", "sentences": object_name})
 

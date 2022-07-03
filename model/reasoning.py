@@ -14,13 +14,11 @@ from mongo import coll
 
 
 def get_wiki_content(index) -> list:
-    # conts = []
     a = False
     try:
         cont = w.page(str(arr[index])).content
         return cont
-        # print(cont)
-        # conts.append(cont)
+
     except WikipediaException:
         a = True
 
@@ -108,4 +106,5 @@ if __name__ == "__main__":
         print(
             f'Article: {inds[0]}/{articles_num}, Paragraph: {inds[1]}/{par_len}, Sentence: {inds[2]}/{sent_len}:\n{pred[0]}\n')
 
+    print(f'Default Sentences Count: {len(preds)}')
     df.to_csv(f'{os.getcwd()}/data{articles_num}.csv', index=False)
