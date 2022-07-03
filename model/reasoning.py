@@ -23,25 +23,6 @@ def get_wiki_content(index) -> list:
         a = True
 
 
-def analogy(x1, x2, y1):
-    res = model.most_similar(positive=[y1.lower(), x2.lower()], negative=[x1.lower()])
-    return res[0][0]
-
-
-def visual_pca(model, words=None, sample=0):
-    if not words:
-        if sample > 0:
-            words = np.random.choice(list(model.index_to_key), sample)
-        else:
-            words = [word for word in model.vocab]
-    word_vecs = np.array([model[w] for w in words])
-    two_dim = PCA().fit_transform(word_vecs)[:, :2]
-    plt.figure(figsize=(6, 6))
-    plt.scatter(two_dim[:, 0], two_dim[:, 1], edgecolors='k', c='r')
-    for word, (x, y) in zip(words, two_dim):
-        plt.text(x + 0.05, y + 0.05, word)
-    plt.show()
-
 
 if __name__ == "__main__":
     articles_num = 5
